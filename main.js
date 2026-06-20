@@ -97,11 +97,11 @@ export default {
     ctx.subscriptions.push(ctx.app.events.on("app.focus", (p) => { active = !!(p && p.focused); sync(); }));
     sync();
 
-    const reg = (n, params, h) => ctx.subscriptions.push(ctx.app.commands.register(n, { description: n, params, handler: h }));
-    reg("toggle", {}, () => { visible = !visible; cv.style.display = visible ? "block" : "none"; if (!visible) g.clearRect(0, 0, VW, VH); onVis(); return { visible }; });
-    reg("density", { n: { type: "number", description: "꽃잎 수 5~150(기본 32)" } }, (p) => { density = clamp(Math.round(Number(p && p.n) || 32), 5, 150); spawn(density); return { density }; });
-    reg("fall", { speed: { type: "number", description: "낙하 속도 배수 0.3~3" } }, (p) => { fallK = clamp(Number(p && p.speed) || 1, 0.3, 3); return { fall: fallK }; });
-    reg("wind", { strength: { type: "number", description: "바람(좌우 흐름) -2~2(음수=왼쪽)" } }, (p) => { windK = clamp(Number(p && p.strength) || 0, -2, 2); return { wind: windK }; });
+    const reg = (n, description, triggers, params, h) => ctx.subscriptions.push(ctx.app.commands.register(n, { description, triggers, params, handler: h }));
+    reg("toggle", "Toggle falling sakura petal overlay on or off. Use to enable or disable the ambient cherry blossom effect.", { ko: "벚꽃 꽃잎 켜기 끄기 앰비언트 효과" }, {}, () => { visible = !visible; cv.style.display = visible ? "block" : "none"; if (!visible) g.clearRect(0, 0, VW, VH); onVis(); return { visible }; });
+    reg("density", "Set the number of falling sakura petals (5–150, default 32). Higher values add more petals.", { ko: "벚꽃 꽃잎 개수 밀도 조절" }, { n: { type: "number", description: "꽃잎 수 5~150(기본 32)" } }, (p) => { density = clamp(Math.round(Number(p && p.n) || 32), 5, 150); spawn(density); return { density }; });
+    reg("fall", "Set the petal fall speed multiplier (0.3–3, default 1). Lower values slow the petals, higher values speed them up.", { ko: "벚꽃 낙하 속도 배수 조절" }, { speed: { type: "number", description: "낙하 속도 배수 0.3~3" } }, (p) => { fallK = clamp(Number(p && p.speed) || 1, 0.3, 3); return { fall: fallK }; });
+    reg("wind", "Set the horizontal wind drift (-2 to 2, default 0). Negative drifts petals left, positive drifts them right.", { ko: "벚꽃 바람 방향 강도 좌우 흐름" }, { strength: { type: "number", description: "바람(좌우 흐름) -2~2(음수=왼쪽)" } }, (p) => { windK = clamp(Number(p && p.strength) || 0, -2, 2); return { wind: windK }; });
 
     ctx.subscriptions.push({ dispose() {
       stop();
